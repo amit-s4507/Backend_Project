@@ -1,5 +1,6 @@
 //require('dotenv').config({path : './env'})
 import dotenv from "dotenv"
+import { app } from "./app.js"; // ✅ named import
 
 import connectDB from "./db/index.js"
 
@@ -24,6 +25,7 @@ connectDB()
     console.log("Mongo db connection failed !!!! ",err);
 
 })
+
 
 
 

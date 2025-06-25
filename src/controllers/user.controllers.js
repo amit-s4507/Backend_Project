@@ -4,7 +4,7 @@ import {User} from "../models/user.models.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
-
+import mongoose from "mongoose"
 
 const generateAccessAndRefreshTokens = async(userId) => {
     try {
@@ -154,7 +154,7 @@ const logoutUser = asyncHandler(async(req,res) => {
         req.user._id,
         {
             $set : {
-                refreshToken : undefined,
+                refreshToken : 1, // this removes the field from document 
             }
         },
         {
@@ -226,7 +226,7 @@ const refreshAccessToken = asyncHandler(async(req,res) =>{
  
 const changeCurrentPassword = asyncHandler(async(req,res) =>{
 
-    const {oldPassword, newPasssword} = req.body
+    const {oldPassword, newPassword} = req.body
 
     // req.user?.id
     const user = await User.findById(req.user?._id)
@@ -236,7 +236,7 @@ const changeCurrentPassword = asyncHandler(async(req,res) =>{
         throw new ApiError(400, "Invalid old password")
     }
 
-    user.password = newPasssword
+    user.password = newPassword
     await user.save({validateBeforeSave : false})
 
     return res
@@ -455,7 +455,7 @@ const updateUserAvatar = asyncHandler(async(req,res) =>
                     {
                         $addFields : {
                             owner : {
-                                $first : "owner"
+                                $first : "$owner"
                             }
                         }
                     }
@@ -469,11 +469,12 @@ const updateUserAvatar = asyncHandler(async(req,res) =>
     .json(
         new ApiResponse(
             200,
-            user[0].watchHistory,
+            user[0].watchHistory  || [],
             "Watch history fetched successfully"
         )
     )
  })
+
 export {
     registerUser,
     loginUser,
@@ -486,5 +487,5 @@ export {
     updateCoverImage,
     getUserChannelProfile,
     getWatchHistory
-
+    
 }

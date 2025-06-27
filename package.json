@@ -25,12 +25,15 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.0",
     "mongoose-aggregate-paginate-v2": "^1.1.4",
     "multer": "^2.0.1",
-    "openai": "^5.7.0",
-    "prettier": "^3.5.3"
+    "nodemailer": "^7.0.3",
+    "openai": "^5.8.1",
+    "prettier": "^3.5.3",
+    "socket.io": "^4.8.1"
   }
 }

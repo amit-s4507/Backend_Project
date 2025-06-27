@@ -1,4 +1,14 @@
-import { Router } from 'express';
+import { Router } from 'express'
+
+import {
+  validateVideoUpload,
+  validateVideoFile,
+  validateThumbnail
+} from "../middlewares/validation.middlewares.js";
+
+import { uploadLimiter } from "../middlewares/rateLimit.middlewares.js";
+
+
 import {
     deleteVideo,
     getAllVideos,
@@ -12,25 +22,26 @@ import {verifyJWT} from "../middlewares/auth.middlewares.js"
 import {upload} from "../middlewares/multer.middlewares.js"
 
 const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
+// ✅ Public: allow frontend to fetch videos without login
+router.get("/", getAllVideos);
+
+// 🔐 Protect the rest
+router.use(verifyJWT);
 router
-    .route("/")
-    .get(getAllVideos)
-    .post(
-        upload.fields([
-            {
-                name: "videoFile",
-                maxCount: 1,
-            },
-            {
-                name: "thumbnail",
-                maxCount: 1,
-            },
-            
-        ]),
-        publishAVideo
-    );
+   .route("/")
+  .get(getAllVideos)
+  .post(
+    uploadLimiter,
+    upload.fields([
+      { name: "videoFile", maxCount: 1 },
+      { name: "thumbnail", maxCount: 1 },
+    ]),
+    validateVideoFile,
+    validateThumbnail,
+    validateVideoUpload,
+    publishAVideo
+  );
 
 router
     .route("/:videoId")
